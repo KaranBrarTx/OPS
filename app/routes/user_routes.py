@@ -1,14 +1,22 @@
 from fastapi import FastAPI,HTTPException
 app=FastAPI()
 from schemas.user_schemas import User
-from services.user_services import fetch_user_data,load_data,create_user_data
-@app.get('/user/{user_id}')
-def get_user_data(user_id:str):
-    user=fetch_user_data(user_id)
-
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found !")
-    return user
-@app.post('/user/{user_id}')
+from services.user_services import create_user_data,fetch_user_data
+from app.models.database import SessionLocal
+@app.get("/user/{user_id}")
+def fetch_user(user_id: str):
+    db=SessionLocal()
+    try:
+        user=fetch_user_data(db,user_id)
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        return user
+    finally:
+        db.close()
+@app.post("/users")
 def create_user(user: User):
-    create_user_data(user)
+    db=SessionLocal()
+    try:
+        return create_user_data(db,user)
+    finally:
+        db.close()
