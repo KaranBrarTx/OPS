@@ -14,13 +14,13 @@ def create_order_data(db, order):
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
 
-    total_amount = 0
+    total_amount=0
     items = order.items
-    products_cache = []
+    products_cache=[]
 
     for item in items:
-        product = db.query(Product).filter(
-            Product.id == item.product_id
+        product=db.query(Product).filter(
+            Product.id==item.product_id
         ).first()
 
         if not product:
@@ -32,8 +32,8 @@ def create_order_data(db, order):
                 detail="Insufficient stock"
             )
 
-        total_amount+=product.price * item.quantity
-        products_cache.append((product, item.quantity))
+        total_amount+=product.price*item.quantity
+        products_cache.append((product,item.quantity))
 
     for product, quantity in products_cache:
         product.stock_quantity-=quantity
