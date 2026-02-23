@@ -1,5 +1,5 @@
 from fastapi import FastAPI,HTTPException
-app=FastAPI()
+from main import app
 from schemas.user_schemas import User
 from services.user_services import create_user_data,fetch_user_data
 from app.models.database import SessionLocal

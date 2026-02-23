@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException
-app = FastAPI()
+from main import app
 
-from schemas.order_schemas import OrderCreate
+from schemas.order_schemas import Order
 from services.order_services import (
     create_order_data,
     fetch_orders_data,
@@ -11,7 +11,7 @@ from app.models.database import SessionLocal
 
 
 @app.post("/orders")
-def create_order(order: OrderCreate):
+def create_order(order: Order):
     db = SessionLocal()
     try:
         return create_order_data(db, order)

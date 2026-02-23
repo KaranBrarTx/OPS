@@ -2,7 +2,7 @@ from fastapi import FastAPI,HTTPException
 from schemas.product_schemas import Product
 from services.product_services import create_product_data,fetch_product_data
 from app.models.database import SessionLocal
-app=FastAPI()
+from main import app
 
 @app.get('/products/{product_id}')
 def fetch_product_data(product_id: str):
