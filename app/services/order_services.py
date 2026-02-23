@@ -1,5 +1,6 @@
 import json
 from datetime import datetime
+from fastapi import HTTPException
 
 from app.models.order_model import Order
 from app.models.product_model import Product
@@ -8,41 +9,44 @@ from app.utils.id_generator import generate_id
 
 
 def create_order_data(db, order):
-    user=db.query(User).filter(User.id==order.user_id).first()
-    if not user:
-        raise Exception("User not found")
 
-    total_amount=0
-    items=order.items
+    user = db.query(User).filter(User.id == order.user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    total_amount = 0
+    items = order.items
+    products_cache = []
 
     for item in items:
-        product=db.query(Product).filter(
-            Product.id==item["product_id"]
+        product = db.query(Product).filter(
+            Product.id == item.product_id
         ).first()
 
         if not product:
-            raise Exception("Product not found")
+            raise HTTPException(status_code=404, detail="Product not found")
 
-        if product.stock_quantity<item["quantity"]:
-            raise Exception("Insufficient stock")
+        if product.stock_quantity<item.quantity:
+            raise HTTPException(
+                status_code=400,
+                detail="Insufficient stock"
+            )
 
-        total_amount+=product.price*item["quantity"]
+        total_amount+=product.price * item.quantity
+        products_cache.append((product, item.quantity))
 
-  
-    for item in items:
-        product=db.query(Product).filter(
-            Product.id==item["product_id"]
-        ).first()
+    for product, quantity in products_cache:
+        product.stock_quantity-=quantity
 
-        product.stock_quantity-=item["quantity"]
+    items_json=json.dumps(
+        [item.model_dump() for item in items]
+    )
 
     new_order=Order(
-        id=generate_id(),
         user_id=order.user_id,
-        products=json.dumps(items),
+        products=items_json,
         total_amount=total_amount,
-        status="created",
-        created_at=datetime.utcnow()
+        status="created"
     )
 
     db.add(new_order)
@@ -58,28 +62,28 @@ def fetch_orders_data(db):
 
 def cancel_order_data(db, order_id):
 
-    order=db.query(Order).filter(Order.id == order_id).first()
+    order = db.query(Order).filter(Order.id == order_id).first()
 
     if not order:
-        return None
+        raise HTTPException(status_code=404, detail="Order not found")
 
-    if order.status=="cancelled":
-        raise Exception("Order already cancelled")
+    if order.status == "cancelled":
+        raise HTTPException(
+            status_code=400,
+            detail="Order already cancelled"
+        )
 
-    items=json.loads(order.products)
+    items = json.loads(order.products)
 
-    
     for item in items:
-        product=db.query(Product).filter(
-            Product.id==item["product_id"]
+        product = db.query(Product).filter(
+            Product.id == item["product_id"]
         ).first()
 
         if product:
-            product.stock_quantity+=item["quantity"]
-
-    order.status="cancelled"
+            product.stock_quantity += item["quantity"]
+    order.status = "cancelled"
 
     db.commit()
     db.refresh(order)
-
     return order

@@ -1,10 +1,12 @@
 from fastapi import FastAPI,HTTPException
-from schemas.product_schemas import Product
-from services.product_services import create_product_data,fetch_product_data
+from app.schemas.product_schemas import Product
+from app.services.product_services import create_product_data,fetch_product_data
 from app.models.database import SessionLocal
-from main import app
+from fastapi import APIRouter
 
-@app.get('/products/{product_id}')
+router = APIRouter()
+
+@router.get('/products/{product_id}')
 def fetch_product_data(product_id: str):
     db=SessionLocal()
     try:
@@ -14,7 +16,7 @@ def fetch_product_data(product_id: str):
         return product
     finally:
         db.close()
-@app.post('/products')
+@router.post('/products')
 def create_user(product: Product):
     db=SessionLocal()
     try:

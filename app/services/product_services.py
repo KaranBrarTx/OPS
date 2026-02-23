@@ -2,7 +2,7 @@ from app.models.product_model import Product
 from app.utils.id_generator import generate_id
 def create_product_data(db,product):
     new_product=Product(
-        id=generate_id(),**product.model_dump()
+        id=generate_id(),**product.model_dump(exclude={'id'})
 
     )
     db.add(new_product)

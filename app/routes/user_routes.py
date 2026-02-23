@@ -1,9 +1,11 @@
 from fastapi import FastAPI,HTTPException
-from main import app
-from schemas.user_schemas import User
-from services.user_services import create_user_data,fetch_user_data
+from fastapi import APIRouter
+
+router = APIRouter()
+from app.schemas.user_schemas import User
+from app.services.user_services import create_user_data,fetch_user_data
 from app.models.database import SessionLocal
-@app.get("/user/{user_id}")
+@router.get("/user/{user_id}")
 def fetch_user(user_id: str):
     db=SessionLocal()
     try:
@@ -13,10 +15,19 @@ def fetch_user(user_id: str):
         return user
     finally:
         db.close()
-@app.post("/users")
+@router.post("/users")
 def create_user(user: User):
     db=SessionLocal()
     try:
         return create_user_data(db,user)
+    finally:
+        db.close()
+from app.services.user_services import fetch_all_data
+@router.get('/users')
+def fetch_all_user():
+    db=SessionLocal()
+    try:
+        users=fetch_all_data(db,User)
+        return users
     finally:
         db.close()
