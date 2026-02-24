@@ -46,7 +46,8 @@ def create_order_data(db, order):
         user_id=order.user_id,
         products=items_json,
         total_amount=total_amount,
-        status="created"
+        status="created",
+        items=items_json
     )
 
     db.add(new_order)
