@@ -15,7 +15,7 @@ def create_order_data(db, order):
         raise HTTPException(status_code=404, detail="User not found")
 
     total_amount=0
-    items = order.items
+    items=order.items
     products_cache=[]
 
     for item in items:
@@ -46,8 +46,7 @@ def create_order_data(db, order):
         user_id=order.user_id,
         products=items_json,
         total_amount=total_amount,
-        status="created",
-        items=items_json
+        status="created"
     )
 
     db.add(new_order)

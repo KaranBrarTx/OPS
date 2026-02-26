@@ -7,7 +7,7 @@ from fastapi import APIRouter
 router = APIRouter()
 
 @router.get('/products/{product_id}')
-def fetch_product_data(product_id: str):
+def get_product(product_id: str):
     db=SessionLocal()
     try:
         product=fetch_product_data(db,product_id)

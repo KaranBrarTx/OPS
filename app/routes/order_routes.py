@@ -37,8 +37,6 @@ def cancel_order(order_id: str):
     db = SessionLocal()
     try:
         order=cancel_order_data(db, order_id)
-        if not order:
-            raise HTTPException(status_code=404, detail="Order not found")
         return order
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))

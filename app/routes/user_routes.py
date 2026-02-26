@@ -5,7 +5,7 @@ router = APIRouter()
 from app.schemas.user_schemas import User
 from app.services.user_services import create_user_data,fetch_user_data
 from app.models.database import SessionLocal
-@router.get("/user/{user_id}")
+@router.get("/users/{user_id}")
 def fetch_user(user_id: str):
     db=SessionLocal()
     try:
