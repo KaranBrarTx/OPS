@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import HTTPException
 from fastapi import APIRouter
 
 router=APIRouter()
@@ -16,9 +16,11 @@ from app.models.database import SessionLocal
 def create_order(order: Order):
     db=SessionLocal()
     try:
-        return create_order_data(db,order)
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        return create_order_data(db, order)
+    except HTTPException:           # ✅ re-raise as-is (keeps 404, 400, etc.)
+        raise
+    except Exception as e:          # ✅ only catch unexpected errors
+        raise HTTPException(status_code=500, detail=str(e))
     finally:
         db.close()
 
@@ -36,9 +38,10 @@ def fetch_orders():
 def cancel_order(order_id: str):
     db = SessionLocal()
     try:
-        order=cancel_order_data(db, order_id)
-        return order
+        return cancel_order_data(db, order_id)
+    except HTTPException:
+        raise
     except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e))
     finally:
         db.close()

@@ -11,5 +11,5 @@ def create_user_data(db,user):
 def fetch_user_data(db,user_id):
     return db.query(User).filter(User.id==user_id).first()
 
-def fetch_all_data(db,user):
+def fetch_all_data(db):
     return db.query(User).all()

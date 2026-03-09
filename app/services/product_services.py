@@ -12,3 +12,6 @@ def create_product_data(db,product):
 
 def fetch_product_data(db,product_id):
     return db.query(Product).filter(Product.id==product_id).first()
+
+def fetch_all_products_data(db):
+    return db.query(Product).all()

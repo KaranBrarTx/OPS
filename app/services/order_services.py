@@ -5,7 +5,6 @@ from fastapi import HTTPException
 from app.models.order_model import Order
 from app.models.product_model import Product
 from app.models.user_model import User
-from app.utils.id_generator import generate_id
 
 
 def create_order_data(db, order):
