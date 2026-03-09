@@ -17,9 +17,9 @@ def create_order(order: Order):
     db=SessionLocal()
     try:
         return create_order_data(db, order)
-    except HTTPException:           # ✅ re-raise as-is (keeps 404, 400, etc.)
+    except HTTPException:           
         raise
-    except Exception as e:          # ✅ only catch unexpected errors
+    except Exception as e:          
         raise HTTPException(status_code=500, detail=str(e))
     finally:
         db.close()
