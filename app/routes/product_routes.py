@@ -16,7 +16,7 @@ def get_product(product_id: str):
         return product
     finally:
         db.close()
-@router.post('/products')
+@router.get('/products')
 def create_product(product: Product):
     db=SessionLocal()
     try:
