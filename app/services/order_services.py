@@ -56,7 +56,10 @@ def create_order_data(db, order):
 
 
 def fetch_orders_data(db):
-    return db.query(Order).all()
+    orders = db.query(Order).all()
+    for order in orders:
+        order.products = json.loads(order.products)  # string → list
+    return orders
 
 
 def cancel_order_data(db, order_id):

@@ -16,11 +16,11 @@ def get_product(product_id: str):
         return product
     finally:
         db.close()
-@router.get('/products')
+@router.post('/products')
 def create_product(product: Product):
     db=SessionLocal()
     try:
-        return fetch_all_products_data(db,product)
+        return create_product_data(db,product)
     finally:
         db.close()
 

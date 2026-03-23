@@ -1,9 +1,10 @@
 from fastapi import HTTPException
 from fastapi import APIRouter
+from typing import List
 
-router=APIRouter()
+router = APIRouter()
 
-from app.schemas.order_schemas import Order
+from app.schemas.order_schemas import Order, OrderResponse
 from app.services.order_services import (
     create_order_data,
     fetch_orders_data,
@@ -12,29 +13,29 @@ from app.services.order_services import (
 from app.models.database import SessionLocal
 
 
-@router.post("/orders")
+@router.post("/orders", response_model=OrderResponse)
 def create_order(order: Order):
-    db=SessionLocal()
+    db = SessionLocal()
     try:
         return create_order_data(db, order)
-    except HTTPException:           
+    except HTTPException:
         raise
-    except Exception as e:          
+    except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     finally:
         db.close()
 
 
-@router.get("/orders")
+@router.get("/orders", response_model=List[OrderResponse])
 def fetch_orders():
-    db=SessionLocal()
+    db = SessionLocal()
     try:
         return fetch_orders_data(db)
     finally:
         db.close()
 
 
-@router.put("/orders/{order_id}/cancel")
+@router.put("/orders/{order_id}/cancel", response_model=OrderResponse)
 def cancel_order(order_id: str):
     db = SessionLocal()
     try:
